@@ -23,7 +23,7 @@
         function deleteDept(dept_no, emp_no) {
             return $http({
                 method: 'DELETE'
-                , url: 'api/departments/' + dept_no + "/managers/" + emp_no
+                , url: 'api/departments/' + dept_no + "/managers/" + emp_no // via URL params
             });
 
         }
@@ -52,6 +52,7 @@
                 , url: 'api/departments'
                 , params: {
                     'searchString': searchString
+                    // passed via non-URL params
                 }
             });
         }
@@ -60,7 +61,7 @@
         function retrieveDeptByID(dept_no) {
             return $http({
                 method: 'GET'
-                , url: "api/departments/" + dept_no
+                , url: "api/departments/" + dept_no // passed via URL params
             });
         }
 
@@ -71,6 +72,7 @@
                 , url: 'api/departments/managers'
                 , params: {
                     'searchString': searchString
+                    // passed via non-URL params
                 }
             });
         }
@@ -79,10 +81,11 @@
         function updateDept(dept_no, dept_name) {
             return $http({
                 method: 'PUT' // via route parameters & HTTP header body
-                , url: 'api/departments/' + dept_no
+                , url: 'api/departments/' + dept_no // passed via URL params
                 , data: {
                     dept_no: dept_no,
                     dept_name: dept_name
+                    // passed via body
                 }
             });
         }

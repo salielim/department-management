@@ -52,34 +52,19 @@ app.use(bodyParser.json());
 // DeptService, RegCtrl
 // Create department via transaction where department record is created only when manager record is created 
 app.post("/api/departments", function (req, res) {
-    // post to req.body
     console.log('\nData Submitted');
     console.log('Dept No: ' + req.body.dept.id);
     console.log('Dept Name: ' + req.body.dept.name);
 
-    sequelize
-        .transaction(function (t) {
-            return Department
-                .create(
-                    {
-                        dept_no: req.body.dept.id
-                        ,
-                        dept_name: req.body.dept.name
-                    }
-                    , {transaction: t})
-                .then(function (department) {
-                    console.log("inner result " + JSON.stringify(department))
-                    return Manager
-                        .create(
-                            {
-                                dept_no: req.body.dept.id
-                                , emp_no: req.body.dept.manager
-                                , from_date: req.body.dept.from_date
-                                , to_date: req.body.dept.to_date
-                            }
-                            , {transaction: t});
-                });
-        })
+    Department
+        .create(
+            {
+                dept_no: req.body.dept.id,
+                dept_name: req.body.dept.name
+                // post to req.body
+                // dept_no is the SQL column name, req.body.dept.id is the req response from client
+            }
+        )
         .then(function (results) {
             res
                 .status(200)
@@ -93,7 +78,7 @@ app.post("/api/departments", function (req, res) {
         });
     });
 
-// DeptService, SearchCtrl
+// DeptService, SearchDBCtrl
 // Retrieve department information from database via search findAll
 app.get("/api/departments", function (req, res) {
     Department
@@ -102,6 +87,7 @@ app.get("/api/departments", function (req, res) {
                 $or: [
                     {dept_name: {$like: "%" + req.query.searchString + "%"}},
                     {dept_no: {$like: "%" + req.query.searchString + "%"}}
+                    // passed via non-URL params
                 ]
             }
         })
@@ -126,6 +112,7 @@ app.get("/api/departments/managers", function (req, res) {
                 $or: [
                     {dept_name: {$like: "%" + req.query.searchString + "%"}},
                     {dept_no: {$like: "%" + req.query.searchString + "%"}}
+                    // passed via non-URL params
                     // match any of the condition
                 ]
             }
@@ -158,6 +145,7 @@ app.get("/api/departments/:dept_no", function (req, res) {
     var where = {};
     if (req.params.dept_no) {
         where.dept_no = req.params.dept_no
+        // passed via URL params
     }
 
     console.log("where " + where);
@@ -191,8 +179,8 @@ app.get("/api/departments/:dept_no", function (req, res) {
 app.put('/api/departments/:dept_no', function (req, res) {
 
     var where = {};
-    where.dept_no = req.params.dept_no;
-    var new_dept_name = req.body.dept_name;
+    where.dept_no = req.params.dept_no; // passed via URL params
+    var new_dept_name = req.body.dept_name;  // passed via body
 
     Department
         .update({
@@ -214,8 +202,8 @@ app.put('/api/departments/:dept_no', function (req, res) {
 app.delete("/api/departments/:dept_no/managers/:emp_no", function (req, res) {
 
     var where = {};
-    where.dept_no = req.params.dept_no;
-    where.emp_no = req.params.emp_no;
+    where.dept_no = req.params.dept_no; // via URL params
+    where.emp_no = req.params.emp_no;   // via URL params
 
     Manager
     .destroy({
