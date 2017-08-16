@@ -1,4 +1,5 @@
 ## Department Management System
+Add UI routing to a AngularJS & Node.js app.
 This is a practice app during the NUS Full Stack Foundation course.
 
 ## How to get it up and running
